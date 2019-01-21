@@ -1,10 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Question
-from .forms import QuestionModelForm
+from .forms import QuestionModelForm, AskForm
 
 # Create your views here.
-
 
 def index(request):
     context = {}
@@ -30,8 +29,20 @@ def update(request, question_id):
             form.save()
             return HttpResponse('Question Updated')
         else:
-        context['form'] = form
-        render(request, 'update.html', context)
+            context['form'] = form
+            render(request, 'update.html', context)
     else:
         context['form'] = QuestionModelForm(instance=question)
-    return render(requst, 'update.html', context)
+    return render(request, 'update.html', context)
+
+def create(request):
+    context = {}
+    form = AskForm()
+
+    if request.method == 'POST':
+        form = QuestionModelForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponse('Question Created')
+
+    return render(request, 'create.html', {'form': form})
